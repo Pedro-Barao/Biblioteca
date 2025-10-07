@@ -15,12 +15,14 @@
 
 
 
-**Luiz**
+**Luis**
 
 ![Anurag's GitHub stats](https://github-readme-stats.vercel.app/api?username=TkeX1&show_icons=true&theme=darcula)
 
 
 **Henrique de Oliveira**
+
+![Anurag's GitHub stats](https://github-readme-stats.vercel.app/api?username=H8-HenriqueSilva-eng&show_icons=true&theme=github_dark)
 
 
 **Guilherme Cortez**
