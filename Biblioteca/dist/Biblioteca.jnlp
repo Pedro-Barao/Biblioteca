@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<jnlp spec="1.0" xmlns:jfx="http://javafx.com" href="Biblioteca.jnlp">
+  <information>
+    <title>Biblioteca</title>
+    <vendor>User</vendor>
+    <description>null</description>
+    <offline-allowed/>
+  </information>
+  <resources>
+    <j2se version="1.6+" href="http://java.sun.com/products/autodl/j2se"/>
+    <jar href="Biblioteca.jar" size="17302" download="eager" />
+    <jar href="lib\mysql-connector-j-9.4.0.jar" size="2591877" download="eager" />
+  </resources>
+  <jfx:javafx-desc  width="800" height="600" main-class="biblioteca.Biblioteca"  name="Biblioteca" />
+  <update check="always"/>
+</jnlp>
