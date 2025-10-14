@@ -5,6 +5,7 @@
 package biblioteca;
 
 import java.net.URL;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -15,7 +16,8 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
-import javafx.scene.control.TextArea;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 
 public class FXMLLivroController implements Initializable {
@@ -33,7 +35,14 @@ public class FXMLLivroController implements Initializable {
     @FXML private TextField retirada_entregaCampo;
     @FXML private TextField generoCampo;
 
-    @FXML private TextArea areaTexto;
+    
+    @FXML private TableView<Livros> Tabela;
+    @FXML private TableColumn<Livros, String> colunaNome;
+    @FXML private TableColumn<Livros, String> colunaISBN;
+    @FXML private TableColumn<Livros, String> colunaAno;
+    @FXML private TableColumn<Livros, String> colunaAutor;
+    @FXML private TableColumn<Livros, String> colunaGenero;
+    @FXML private TableColumn<Livros, String> colunaRetEnt;
 
     private final List<Livros> livros = new ArrayList<>();
     private List<Livros> ultimosResultados = new ArrayList<>();
@@ -42,7 +51,7 @@ public class FXMLLivroController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) 
     {
         
-        println("Sistema Pronto! Status: 1=Retirado, 2=Estoque, 3=Atrasado.");
+        System.out.println("Sistema Pronto! Status: 1=Retirado, 2=Estoque, 3=Atrasado.");
 
         if (cadastrarBtn != null) 
         {
@@ -80,8 +89,32 @@ public class FXMLLivroController implements Initializable {
             
         }
         
+        
+        Tabela.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+            if (newSelection != null) {
+                alterarBtn.setDisable(false);
+                excluirBtn.setDisable(false);
+                preencherCampos(newSelection);
+            } else {
+                alterarBtn.setDisable(true);
+                excluirBtn.setDisable(true);
+            }
+        });
+        
     }
 
+    private void preencherCampos(ActionEvent e) {
+        isbnCampo.setText(Livros.getISBN());
+        textField_Nome.setText(cliente.getNome());
+        textField_CPF.setText(cliente.getCpf());
+        textField_Telefone.setText(cliente.getTelefone());
+        textField_Endereco.setText(cliente.getEndereco());
+        textField_Numero.setText(cliente.getNumero());
+        textField_Cidade.setText(cliente.getCidade());
+        textField_UF.setText(cliente.getUf());
+        textField_CEP.setText(cliente.getCep());
+        datePicker_Nascimento.setValue(cliente.getDataNascimento() != null ? LocalDate.parse(cliente.getDataNascimento()) : null);
+    }
 
     @FXML
     private void cadastrar(ActionEvent e) 
@@ -92,7 +125,7 @@ public class FXMLLivroController implements Initializable {
         if (!faltando.isEmpty()) 
         {
             
-            println("Preencha: " + String.join(", ", faltando));
+            System.out.println("Preencha: " + String.join(", ", faltando));
             return;
             
         }
@@ -101,7 +134,7 @@ public class FXMLLivroController implements Initializable {
         if (status == null) 
         {
             
-            println("Status inválido. Use 1=Retirado, 2=Estoque, 3=Atrasado.");
+            System.out.println("Status inválido. Use 1=Retirado, 2=Estoque, 3=Atrasado.");
             return;
             
         }
@@ -117,7 +150,7 @@ public class FXMLLivroController implements Initializable {
         if (jaExiste) 
         {
             
-            println("Já existe livro com ISBN " + isbn);
+            System.out.println("Já existe livro com ISBN " + isbn);
             return;
             
         }
@@ -125,7 +158,7 @@ public class FXMLLivroController implements Initializable {
         Livros liv = new Livros(isbn, nome, ano, autor, genero, status);
         livros.add(liv);
         
-        println("Cadastrado: " + liv.resumo());
+        System.out.println("Cadastrado: " + liv.resumo());
         limparCampos();
         
     }
@@ -146,7 +179,7 @@ public class FXMLLivroController implements Initializable {
         if (nome.isEmpty() && isbn.isEmpty() && ano.isEmpty() && autor.isEmpty() && genero.isEmpty() && sStat.isEmpty()) 
         {
             
-            println("Informe ao menos um critério de pesquisa.");
+            System.out.println("Informe ao menos um critério de pesquisa.");
             return;
             
         }
@@ -155,7 +188,7 @@ public class FXMLLivroController implements Initializable {
         if (!sStat.isEmpty() && filtroStatus == null) 
         {
             
-            println("Status inválido para pesquisa. Use 1/2/3.");
+            System.out.println("Status inválido para pesquisa. Use 1/2/3.");
             return;
             
         }
@@ -172,18 +205,18 @@ public class FXMLLivroController implements Initializable {
         if (ultimosResultados.isEmpty()) 
         {
             
-            println("Nenhum livro encontrado.");
+            System.out.println("Nenhum livro encontrado.");
             
         } 
         
         else 
         {
             
-            println("Resultados (" + ultimosResultados.size() + "):");
+            System.out.println("Resultados (" + ultimosResultados.size() + "):");
             
-            ultimosResultados.forEach(l -> println(" - " + l.resumo()));
+            ultimosResultados.forEach(l -> System.out.println(" - " + l.resumo()));
             
-            println("Dica: para ALTERAR/EXCLUIR, refine a pesquisa até restar 1 item.");
+            System.out.println("Dica: para ALTERAR/EXCLUIR, refine a pesquisa até restar 1 item.");
             
         }
         
@@ -421,36 +454,6 @@ public class FXMLLivroController implements Initializable {
         
     }
 
-    private void println(String msg) 
-    {
-        
-        if (areaTexto != null) 
-        {
-            
-            areaTexto.appendText(msg + "\n");
-            areaTexto.positionCaret(areaTexto.getText().length());
-            
-        } 
-        
-        else 
-        {
-            
-            System.out.println(msg);
-            
-        }
-        
-    }
-
-    private void clearOutput() 
-    {
-        
-        if (areaTexto != null) 
-        {
-            
-            areaTexto.clear();
-            
-        }
-        
-    }
+ 
     
 }
