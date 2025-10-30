@@ -3,11 +3,12 @@ package biblioteca;
 import java.time.LocalDate;
 
 public class Emprestimo {
-    private String cpf;       
-    private String isbn;         
-    private LocalDate retirada;   
-    private LocalDate devolucao; 
-    private boolean devolvido;  
+    private String cpf;
+    private String nomeUsuario; // NOVO CAMPO: Nome do usuário
+    private String isbn;
+    private LocalDate retirada;
+    private LocalDate devolucao;
+    private boolean devolvido;
 
     public Emprestimo() {}
 
@@ -17,7 +18,11 @@ public class Emprestimo {
         this.retirada = retirada;
         this.devolucao = retirada.plusDays(14);
         this.devolvido = false;
+        this.nomeUsuario = "N/D"; // Valor temporário
     }
+
+    public String getNomeUsuario() { return nomeUsuario; }
+    public void setNomeUsuario(String nomeUsuario) { this.nomeUsuario = nomeUsuario; }
 
     public String getCpf() { return cpf; }
     public void setCpf(String cpf) { this.cpf = cpf; }

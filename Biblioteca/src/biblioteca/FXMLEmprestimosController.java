@@ -4,13 +4,36 @@ import javafx.collections.FXCollections;
 import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 
 import java.time.LocalDate;
+import java.net.URL;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.ResourceBundle;
 
-public class FXMLEmprestimosController {
+public class FXMLEmprestimosController implements Initializable {
+
+    // SIMULAÇÃO DE DADOS (Substituir pela sua classe Usuario e GerenciadorDeDados real)
+    private static class Usuario {
+        String cpf;
+        String nome;
+        public Usuario(String cpf, String nome) {
+            this.cpf = cpf;
+            this.nome = nome;
+        }
+    }
+
+    private final List<Usuario> USUARIOS_CADASTRADOS = Arrays.asList(
+            new Usuario("123.456.789-00", "Maria da Silva"),
+            new Usuario("111.222.333-44", "João Pereira"),
+            new Usuario("999.888.777-66", "Ana Costa")
+    );
+    // FIM DA SIMULAÇÃO
 
     @FXML private TextField cpfField;
     @FXML private TextField isbnField;
@@ -20,6 +43,7 @@ public class FXMLEmprestimosController {
 
     @FXML private TableView<Emprestimo> tabela;
     @FXML private TableColumn<Emprestimo, String> colCpf;
+    @FXML private TableColumn<Emprestimo, String> colNome; // NOVA COLUNA
     @FXML private TableColumn<Emprestimo, String> colIsbn;
     @FXML private TableColumn<Emprestimo, LocalDate> colRetirada;
     @FXML private TableColumn<Emprestimo, LocalDate> colDevolucao;
@@ -29,23 +53,35 @@ public class FXMLEmprestimosController {
     private FilteredList<Emprestimo> filtrados;
 
     private final javafx.collections.ObservableList<Emprestimo> baseEmprestimos =
-        javafx.collections.FXCollections.observableArrayList();
+            javafx.collections.FXCollections.observableArrayList();
 
     private javafx.collections.transformation.FilteredList<Emprestimo> filtrado;
-    
-    
-    @FXML
-    public void initialize() {
+
+
+    @Override
+    public void initialize(URL url, ResourceBundle rb) {
         dados.carregarTudo();
 
         colCpf.setCellValueFactory(new PropertyValueFactory<>("cpf"));
+        colNome.setCellValueFactory(new PropertyValueFactory<>("nomeUsuario"));
         colIsbn.setCellValueFactory(new PropertyValueFactory<>("isbn"));
         colRetirada.setCellValueFactory(new PropertyValueFactory<>("retirada"));
         colDevolucao.setCellValueFactory(new PropertyValueFactory<>("devolucao"));
         colDevolvido.setCellValueFactory(new PropertyValueFactory<>("devolvido"));
 
+        // NOVO: Preenche os nomes de empréstimos antigos antes de carregar na tabela
+        baseEmprestimos.setAll(dados.listarEmprestimos());
+        baseEmprestimos.forEach(emp -> {
+            if (emp.getNomeUsuario() == null || emp.getNomeUsuario().equals("N/D")) {
+                String nome = procurarNomePorCpf(emp.getCpf());
+                if (nome != null) {
+                    emp.setNomeUsuario(nome);
+                }
+            }
+        });
+
         filtrados = new FilteredList<>(
-                FXCollections.observableArrayList(dados.listarEmprestimos()),
+                baseEmprestimos,
                 p -> true
         );
         tabela.setItems(filtrados);
@@ -73,6 +109,13 @@ public class FXMLEmprestimosController {
         devolucaoLabel.setText(r.plusDays(14).toString());
     }
 
+    private String procurarNomePorCpf(String cpf) {
+        Optional<Usuario> user = USUARIOS_CADASTRADOS.stream()
+                .filter(u -> u.cpf.equals(cpf))
+                .findFirst();
+        return user.isPresent() ? user.get().nome : null;
+    }
+
     @FXML
     public void cadastrar(ActionEvent e) {
         String cpf = safeTrim(cpfField.getText());
@@ -84,9 +127,21 @@ public class FXMLEmprestimosController {
             return;
         }
 
+        String nome = procurarNomePorCpf(cpf);
+        if (nome == null) {
+            warn("CPF não encontrado na base de usuários. Verifique o cadastro.");
+            return;
+        }
+
         try {
-            Emprestimo emp = dados.registrarEmprestimo(cpf, isbn, retirada);
-            info("Empréstimo cadastrado. Devolução até " + emp.getDevolucao() + ".");
+            // Cria um objeto Emprestimo para fins de feedback e para a tabela
+            Emprestimo emp = new Emprestimo(cpf, isbn, retirada);
+            emp.setNomeUsuario(nome);
+
+            // CHAMADA CORRIGIDA: Usa a assinatura esperada (String, String, LocalDate) para compilar.
+            dados.registrarEmprestimo(cpf, isbn, retirada);
+
+            info("Empréstimo cadastrado para " + nome + ". Devolução até " + emp.getDevolucao() + ".");
             refreshTable();
             limparCampos();
         } catch (Exception ex) {
@@ -126,7 +181,7 @@ public class FXMLEmprestimosController {
         String isbn = safeTrim(isbnField.getText());
         filtrados.setPredicate(emp ->
                 (cpf.isEmpty() || cpf.equals(emp.getCpf())) &&
-                (isbn.isEmpty() || isbn.equals(emp.getIsbn()))
+                        (isbn.isEmpty() || isbn.equals(emp.getIsbn()))
         );
     }
 
@@ -136,7 +191,20 @@ public class FXMLEmprestimosController {
     }
 
     private void refreshTable() {
+        // Recarrega a base de dados
         baseEmprestimos.setAll(dados.listarEmprestimos());
+
+        // Preenche o nome para todos os itens recém-carregados
+        baseEmprestimos.forEach(emp -> {
+            if (emp.getNomeUsuario() == null || emp.getNomeUsuario().equals("N/D")) {
+                String nome = procurarNomePorCpf(emp.getCpf());
+                if (nome != null) {
+                    emp.setNomeUsuario(nome);
+                }
+            }
+        });
+
+        // Força a tabela a redesenhar todas as linhas, exibindo o novo item e o nome.
         tabela.refresh();
     }
 

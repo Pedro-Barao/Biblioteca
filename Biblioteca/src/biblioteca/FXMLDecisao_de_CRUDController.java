@@ -35,7 +35,7 @@ public class FXMLDecisao_de_CRUDController implements Initializable {
 
     @FXML
     private void abrirUsuarios(ActionEvent e) {
-        Navigator.goTo((Node) e.getSource(), "/biblioteca/FXMLUsuario.fxml");
+        Navigator.goTo((Node) e.getSource(), "/biblioteca/FXMLUsuario.fxml"); // Usando o novo nome
     }
     
     @FXML

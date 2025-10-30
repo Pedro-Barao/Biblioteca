@@ -220,15 +220,3 @@ public class GerenciadorDeDados {
     }
 }
 
-class LocalDateAdapter implements JsonSerializer<LocalDate>, JsonDeserializer<LocalDate> {
-    @Override
-    public JsonElement serialize(LocalDate src, java.lang.reflect.Type typeOfSrc, JsonSerializationContext context) {
-        return (src == null) ? JsonNull.INSTANCE : new JsonPrimitive(src.toString());
-    }
-    @Override
-    public LocalDate deserialize(JsonElement json, java.lang.reflect.Type typeOfT, JsonDeserializationContext context)
-            throws JsonParseException {
-        if (json == null || json.isJsonNull()) return null;
-        return LocalDate.parse(json.getAsString());
-    }
-}
