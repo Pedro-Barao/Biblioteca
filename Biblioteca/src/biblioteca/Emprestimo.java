@@ -3,43 +3,39 @@ package biblioteca;
 import java.time.LocalDate;
 
 public class Emprestimo {
-    private String cpf;
-    private String nomeUsuario; // NOVO CAMPO: Nome do usuário
-    private String isbn;
-    private LocalDate retirada;
-    private LocalDate devolucao;
-    private boolean devolvido;
 
-    public Emprestimo() {}
+    private String cpfUsuario;
+    private String nomeUsuario;
+    private String isbnLivro;
+    private LocalDate dataRetirada;
+    private LocalDate dataDevolucao;
+    private String status; // "Ativo", "Atrasado", "Devolvido"
 
-    public Emprestimo(String cpf, String isbn, LocalDate retirada) {
-        this.cpf = cpf;
-        this.isbn = isbn;
-        this.retirada = retirada;
-        this.devolucao = retirada.plusDays(14);
-        this.devolvido = false;
-        this.nomeUsuario = "N/D"; // Valor temporário
+    public Emprestimo(String cpfUsuario, String nomeUsuario, String isbnLivro, LocalDate dataRetirada, LocalDate dataDevolucao, String status) {
+        this.cpfUsuario = cpfUsuario;
+        this.nomeUsuario = nomeUsuario;
+        this.isbnLivro = isbnLivro;
+        this.dataRetirada = dataRetirada;
+        this.dataDevolucao = dataDevolucao;
+        this.status = status;
     }
+
+    // Getters e Setters com os nomes corretos
+    public String getCpfUsuario() { return cpfUsuario; }
+    public void setCpfUsuario(String cpfUsuario) { this.cpfUsuario = cpfUsuario; }
 
     public String getNomeUsuario() { return nomeUsuario; }
     public void setNomeUsuario(String nomeUsuario) { this.nomeUsuario = nomeUsuario; }
 
-    public String getCpf() { return cpf; }
-    public void setCpf(String cpf) { this.cpf = cpf; }
+    public String getIsbnLivro() { return isbnLivro; }
+    public void setIsbnLivro(String isbnLivro) { this.isbnLivro = isbnLivro; }
 
-    public String getIsbn() { return isbn; }
-    public void setIsbn(String isbn) { this.isbn = isbn; }
+    public LocalDate getDataRetirada() { return dataRetirada; }
+    public void setDataRetirada(LocalDate dataRetirada) { this.dataRetirada = dataRetirada; }
 
-    public LocalDate getRetirada() { return retirada; }
-    public void setRetirada(LocalDate retirada) { this.retirada = retirada; }
+    public LocalDate getDataDevolucao() { return dataDevolucao; }
+    public void setDataDevolucao(LocalDate dataDevolucao) { this.dataDevolucao = dataDevolucao; }
 
-    public LocalDate getDevolucao() { return devolucao; }
-    public void setDevolucao(LocalDate devolucao) { this.devolucao = devolucao; }
-
-    public boolean isDevolvido() { return devolvido; }
-    public void setDevolvido(boolean devolvido) { this.devolvido = devolvido; }
-
-    public boolean isAtrasado(LocalDate hoje) {
-        return !devolvido && hoje != null && hoje.isAfter(devolucao);
-    }
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
 }

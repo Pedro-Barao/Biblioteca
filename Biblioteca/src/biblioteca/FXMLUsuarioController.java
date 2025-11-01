@@ -1,95 +1,184 @@
 package biblioteca;
 
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.ResourceBundle;
+import java.util.stream.Collectors;
+import java.time.LocalDate; // Import necessário
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
-import java.net.URL;
-import java.util.ResourceBundle;
-import javafx.fxml.Initializable;
 
-// Nota: Esta classe assume que você tem uma classe 'Usuario' e uma classe 'GerenciadorDeDados'
-// para as funcionalidades de CRUD.
 public class FXMLUsuarioController implements Initializable {
 
-    @FXML private TextField nomeCampo;
-    @FXML private TextField cpfCampo;
-    @FXML private TextField telefoneCampo;
-    @FXML private TextField enderecoCampo;
+    @FXML private Button excluirBtn, pesquisarBtn, cadastrarBtn, alterarBtn, voltarBtn;
+    @FXML private TextField nomeCampo, idCampo, telefoneCampo, enderecoCampo;
+    @FXML private TableView<Usuario> Tabela;
+    @FXML private TableColumn<Usuario, String> colunaNome, colunaId, colunaTelefone, colunaEndereco, colunaStatusEmprestimo, colunaIdLivro;
 
-    @FXML private TableView<Usuario> tabelaUsuarios;
-    @FXML private TableColumn<Usuario, String> colunaNome;
-    @FXML private TableColumn<Usuario, String> colunaCPF;
-    @FXML private TableColumn<Usuario, String> colunaTelefone;
-    @FXML private TableColumn<Usuario, String> colunaEndereco;
-
-    // Gerenciador de dados simulado
-    // private final GerenciadorDeDados dados = new GerenciadorDeDados();
+    private final ObservableList<Usuario> usuarios = FXCollections.observableArrayList(GerenciadorDeDados.carregarUsuarios());
+    private final List<Emprestimo> emprestimos = GerenciadorDeDados.carregarEmprestimos();
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // Inicializa as colunas da tabela
         colunaNome.setCellValueFactory(new PropertyValueFactory<>("nome"));
-        colunaCPF.setCellValueFactory(new PropertyValueFactory<>("cpf"));
+        colunaId.setCellValueFactory(new PropertyValueFactory<>("id"));
         colunaTelefone.setCellValueFactory(new PropertyValueFactory<>("telefone"));
         colunaEndereco.setCellValueFactory(new PropertyValueFactory<>("endereco"));
+        colunaStatusEmprestimo.setCellValueFactory(new PropertyValueFactory<>("statusEmprestimo"));
+        colunaIdLivro.setCellValueFactory(new PropertyValueFactory<>("livroEmprestadoId"));
 
-        // Exemplo de como carregar dados (você deve adaptar isso ao seu 'GerenciadorDeDados')
-        // tabelaUsuarios.setItems(dados.listarUsuarios());
+        atualizarStatusEmprestimosDosUsuarios();
+        Tabela.setItems(usuarios);
+
+        Tabela.getSelectionModel().selectedItemProperty().addListener((obs, o, n) -> {
+            boolean selecionado = n != null;
+            alterarBtn.setDisable(!selecionado);
+            excluirBtn.setDisable(!selecionado);
+            if (selecionado) preencherCampos(n); else limparCampos();
+        });
+
+        alterarBtn.setDisable(true);
+        excluirBtn.setDisable(true);
+    }
+
+    private void atualizarStatusEmprestimosDosUsuarios() {
+        for (Usuario usuario : usuarios) {
+
+            // --- AQUI ESTÁ A CORREÇÃO ---
+            // Usa getCpfUsuario() e !getStatus().equals("Devolvido")
+            Optional<Emprestimo> emprestimoEncontrado = emprestimos.stream()
+                    .filter(emp -> emp.getCpfUsuario().equals(usuario.getId()))
+                    .filter(emp -> !emp.getStatus().equals("Devolvido")) // Correção aqui
+                    .findFirst();
+            // --- FIM DA CORREÇÃO ---
+
+            if (emprestimoEncontrado.isPresent()) {
+                Emprestimo emprestimo = emprestimoEncontrado.get();
+
+                if (emprestimo.getDataDevolucao().isBefore(LocalDate.now())) {
+                    emprestimo.setStatus("Atrasado");
+                }
+                usuario.setStatusEmprestimo(emprestimo.getStatus());
+                usuario.setLivroEmprestadoId(emprestimo.getIsbnLivro());
+
+            } else {
+                usuario.setStatusEmprestimo("Nenhum");
+                usuario.setLivroEmprestadoId("");
+            }
+        }
+
+        GerenciadorDeDados.salvarEmprestimos(emprestimos);
+
+        if (Tabela != null) {
+            Tabela.refresh();
+        }
     }
 
     @FXML
-    private void cadastrar(ActionEvent event) {
-        String cpf = cpfCampo.getText();
-        String nome = nomeCampo.getText();
-
-        if (cpf.isEmpty() || nome.isEmpty()) {
-            mostrarAlerta(Alert.AlertType.WARNING, "Campos Obrigatórios", "Nome e CPF são obrigatórios.");
+    private void cadastrar(ActionEvent e) {
+        if (!validarCamposObrigatorios()) return;
+        String id = idCampo.getText().trim();
+        if (usuarios.stream().anyMatch(usuario -> usuario.getId().equalsIgnoreCase(id))) {
+            mostrarAlerta("Erro", "Já existe um usuário cadastrado com este ID.");
             return;
         }
 
-        // Lógica para cadastrar o novo usuário (ex: dados.cadastrarUsuario(new Usuario(...)))
-        mostrarAlerta(Alert.AlertType.INFORMATION, "Sucesso", "Usuário " + nome + " cadastrado.");
+        Usuario novoUsuario = new Usuario(id, nomeCampo.getText().trim(), telefoneCampo.getText().trim(), enderecoCampo.getText().trim());
+        usuarios.add(novoUsuario);
+        GerenciadorDeDados.salvarUsuarios(new ArrayList<>(usuarios));
+
+        limparCampos();
+        Tabela.setItems(usuarios);
+        atualizarStatusEmprestimosDosUsuarios();
+        mostrarAlerta("Sucesso", "Usuário cadastrado.");
+    }
+
+    @FXML
+    private void pesquisar(ActionEvent e) {
+        String nome = safeLower(nomeCampo);
+        String id = safeLower(idCampo);
+
+        if (nome.isEmpty() && id.isEmpty()) {
+            Tabela.setItems(usuarios);
+            System.out.println("Nenhum filtro aplicado. Mostrando todos os " + usuarios.size() + " usuários.");
+            return;
+        }
+
+        List<Usuario> resultados = usuarios.stream()
+                .filter(u -> nome.isEmpty() || u.getNome().toLowerCase().contains(nome))
+                .filter(u -> id.isEmpty() || u.getId().toLowerCase().contains(id))
+                .collect(Collectors.toList());
+
+        Tabela.setItems(FXCollections.observableArrayList(resultados));
+        System.out.println("Pesquisa encontrou " + resultados.size() + " usuário(s).");
+    }
+
+    @FXML
+    private void alterar(ActionEvent e) {
+        Usuario selecionado = Tabela.getSelectionModel().getSelectedItem();
+        if (selecionado == null) {
+            mostrarAlerta("Erro", "Selecione um usuário na tabela para alterar.");
+            return;
+        }
+        if (!validarCamposObrigatorios()) return;
+
+        selecionado.setNome(nomeCampo.getText().trim());
+        selecionado.setTelefone(telefoneCampo.getText().trim());
+        selecionado.setEndereco(enderecoCampo.getText().trim());
+        Tabela.refresh();
+        GerenciadorDeDados.salvarUsuarios(new ArrayList<>(usuarios));
+        mostrarAlerta("Sucesso", "Usuário alterado.");
         limparCampos();
     }
 
     @FXML
-    private void alterar(ActionEvent event) {
-        // Lógica para alterar o usuário selecionado
-        mostrarAlerta(Alert.AlertType.INFORMATION, "Ação", "Função Alterar (Deve usar o CPF para localizar).");
+    private void excluir(ActionEvent e) {
+        Usuario selecionado = Tabela.getSelectionModel().getSelectedItem();
+        if (selecionado == null) {
+            mostrarAlerta("Erro", "Selecione um usuário na tabela para excluir.");
+            return;
+        }
+        usuarios.remove(selecionado);
+        GerenciadorDeDados.salvarUsuarios(new ArrayList<>(usuarios));
+        mostrarAlerta("Sucesso", "Usuário excluído.");
     }
 
     @FXML
-    private void pesquisar(ActionEvent event) {
-        // Lógica para pesquisar (filtrar a tabela)
-        mostrarAlerta(Alert.AlertType.INFORMATION, "Ação", "Função Pesquisar.");
-    }
+    private void voltar(ActionEvent e) { Navigator.goTo((Node) e.getSource(), "/biblioteca/FXMLDecisao_de_CRUD.fxml"); }
 
-    @FXML
-    private void excluir(ActionEvent event) {
-        // Lógica para excluir o usuário selecionado
-        mostrarAlerta(Alert.AlertType.ERROR, "Ação", "Função Excluir (Confirmação necessária).");
-    }
+    // --- MÉTODOS AUXILIARES ---
 
-    @FXML
-    private void voltar(ActionEvent e) {
-        Navigator.goTo((Node) e.getSource(), "/biblioteca/FXMLDecisao_de_CRUD.fxml");
+    private void preencherCampos(Usuario usuario) { if (usuario == null) return; nomeCampo.setText(usuario.getNome()); idCampo.setText(usuario.getId()); telefoneCampo.setText(usuario.getTelefone()); enderecoCampo.setText(usuario.getEndereco()); }
+    private void limparCampos() { nomeCampo.clear(); idCampo.clear(); telefoneCampo.clear(); enderecoCampo.clear(); Tabela.getSelectionModel().clearSelection(); }
+    private boolean validarCamposObrigatorios() {
+        if (vazio(nomeCampo) || vazio(idCampo)) {
+            mostrarAlerta("Erro", "Campos obrigatórios: Nome, ID");
+            return false;
+        }
+        return true;
     }
+    private boolean vazio(TextField tf) { return tf == null || tf.getText() == null || tf.getText().trim().isEmpty(); }
+    private String safeLower(TextField tf) { return (tf == null || tf.getText() == null) ? "" : tf.getText().trim().toLowerCase(); }
 
-    private void limparCampos() {
-        nomeCampo.clear();
-        cpfCampo.clear();
-        telefoneCampo.clear();
-        enderecoCampo.clear();
-        tabelaUsuarios.getSelectionModel().clearSelection();
-    }
-
-    private void mostrarAlerta(Alert.AlertType type, String titulo, String mensagem) {
-        Alert alert = new Alert(type);
+    private void mostrarAlerta(String titulo, String mensagem) {
+        Alert alert;
+        if (titulo.toLowerCase().equals("erro")) {
+            alert = new Alert(Alert.AlertType.ERROR);
+        } else {
+            alert = new Alert(Alert.AlertType.INFORMATION);
+        }
         alert.setTitle(titulo);
         alert.setHeaderText(null);
         alert.setContentText(mensagem);

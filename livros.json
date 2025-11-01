@@ -1,0 +1,11 @@
+[
+  {
+    "isbn": "123",
+    "nome": "Suco de Laranja",
+    "ano": "1999",
+    "autor": "Mendes",
+    "genero": "Algum",
+    "retirada_Entrega": "ESTOQUE",
+    "emEstoque": false
+  }
+]

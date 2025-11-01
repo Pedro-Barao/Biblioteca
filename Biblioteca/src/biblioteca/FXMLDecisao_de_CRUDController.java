@@ -13,19 +13,19 @@ public class FXMLDecisao_de_CRUDController implements Initializable {
     @FXML private Button livrosBtn;
     @FXML private Button sairBtn;
     @FXML private Button usuariosBtn;
-    @FXML private Button gerenciarBtn;
+    @FXML private Button emprestimosBtn;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         if (sairBtn != null) { sairBtn.setOnAction(this::sair); }
         if (livrosBtn != null) { livrosBtn.setOnAction(this::abrirLivros); }
         if (usuariosBtn != null) { usuariosBtn.setOnAction(this::abrirUsuarios); }
-        if (gerenciarBtn != null) { gerenciarBtn.setOnAction(this::abrirGerenciador);}
+        if (emprestimosBtn != null) { emprestimosBtn.setOnAction(this::abrirEmprestimos); }
     }
 
     @FXML
     private void sair(ActionEvent e) {
-        Navigator.goTo((Node) e.getSource(), "/biblioteca/FXMLDocument.fxml");
+        Navigator.goTo((Node) e.getSource(), "/biblioteca/FXMLLogin.fxml");
     }
 
     @FXML
@@ -35,11 +35,13 @@ public class FXMLDecisao_de_CRUDController implements Initializable {
 
     @FXML
     private void abrirUsuarios(ActionEvent e) {
-        Navigator.goTo((Node) e.getSource(), "/biblioteca/FXMLUsuario.fxml"); // Usando o novo nome
+        Navigator.goTo((Node) e.getSource(), "/biblioteca/FXMLUsuario.fxml");
     }
-    
+
     @FXML
-    private void abrirGerenciador(ActionEvent e) {
+    private void abrirEmprestimos(ActionEvent e) {
+        // --- CORREÇÃO AQUI ---
+        // Adicione o 's' ao nome do arquivo
         Navigator.goTo((Node) e.getSource(), "/biblioteca/FXMLEmprestimos.fxml");
     }
 }
