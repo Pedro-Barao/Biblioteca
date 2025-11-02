@@ -40,8 +40,6 @@ public class FXMLDecisao_de_CRUDController implements Initializable {
 
     @FXML
     private void abrirEmprestimos(ActionEvent e) {
-        // --- CORREÇÃO AQUI ---
-        // Adicione o 's' ao nome do arquivo
         Navigator.goTo((Node) e.getSource(), "/biblioteca/FXMLEmprestimos.fxml");
     }
 }

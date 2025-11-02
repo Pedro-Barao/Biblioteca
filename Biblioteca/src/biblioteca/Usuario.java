@@ -1,19 +1,16 @@
 package biblioteca;
 
 public class Usuario {
-    // id = CPF
     private String id;
     private String nome;
     private String telefone;
     private String endereco;
 
-    // Controle de empréstimo
-    private boolean retirouLivro = false;        // true se tem empréstimo ativo
-    private String livroEmprestadoId = "";       // ISBN do livro atual (se houver)
-    private String statusEmprestimo = "Nenhum";  // "Nenhum", "Emprestado", "Livro atrasado"
+    private boolean retirouLivro = false;
+    private String livroEmprestadoId = "";
+    private String statusEmprestimo = "Nenhum";
 
     public Usuario() {
-        // necessário para (de)serialização e ferramentas de UI
     }
 
     public Usuario(String id, String nome, String telefone, String endereco) {
@@ -23,7 +20,6 @@ public class Usuario {
         this.endereco = endereco;
     }
 
-    // --- básicos ---
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
 
@@ -52,7 +48,6 @@ public class Usuario {
                 ? "Nenhum" : statusEmprestimo;
     }
 
-    // --- util ---
     public String resumo() {
         return String.format(
             "ID: %s | Nome: %s | Tel: %s | Status: %s%s",

@@ -9,7 +9,7 @@ public class Emprestimo {
     private String isbnLivro;
     private LocalDate dataRetirada;
     private LocalDate dataDevolucao;
-    private String status; // "Ativo", "Atrasado", "Devolvido"
+    private String status;
 
     public Emprestimo(String cpfUsuario, String nomeUsuario, String isbnLivro, LocalDate dataRetirada, LocalDate dataDevolucao, String status) {
         this.cpfUsuario = cpfUsuario;
@@ -20,7 +20,6 @@ public class Emprestimo {
         this.status = status;
     }
 
-    // Getters e Setters com os nomes corretos
     public String getCpfUsuario() { return cpfUsuario; }
     public void setCpfUsuario(String cpfUsuario) { this.cpfUsuario = cpfUsuario; }
 

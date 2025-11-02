@@ -26,7 +26,6 @@ public class FXMLLivroController implements Initializable {
     @FXML private TableColumn<Livros, String> colunaNome, colunaISBN, colunaAno, colunaAutor, colunaGenero;
     @FXML private TableColumn<Livros, Status> colunaRetEnt;
 
-    // Carrega os livros salvos ao iniciar
     private final ObservableList<Livros> livros = FXCollections.observableArrayList(GerenciadorDeDados.carregarLivros());
 
     @Override
@@ -67,7 +66,6 @@ public class FXMLLivroController implements Initializable {
         Livros novoLivro = new Livros(isbn, nomeCampo.getText().trim(), anoCampo.getText().trim(), autorCampo.getText().trim(), generoCampo.getText().trim(), status);
         livros.add(novoLivro);
 
-        // SALVA OS DADOS
         GerenciadorDeDados.salvarLivros(new ArrayList<>(livros));
 
         mostrarAlerta("Sucesso", "Livro cadastrado.");
@@ -80,7 +78,7 @@ public class FXMLLivroController implements Initializable {
         String nome = safeLower(nomeCampo), isbn = safeLower(isbnCampo), ano = safeLower(anoCampo), autor = safeLower(autorCampo), genero = safeLower(generoCampo), sStat = safeTrim(retirada_entregaCampo);
 
         if (nome.isEmpty() && isbn.isEmpty() && ano.isEmpty() && autor.isEmpty() && genero.isEmpty() && sStat.isEmpty()) {
-            Tabela.setItems(livros); // Mostra todos se a pesquisa for vazia
+            Tabela.setItems(livros);
             return;
         }
 
@@ -114,7 +112,6 @@ public class FXMLLivroController implements Initializable {
         selecionado.setRetirada_Entrega(obterStatusDaUI());
         Tabela.refresh();
 
-        // SALVA OS DADOS
         GerenciadorDeDados.salvarLivros(new ArrayList<>(livros));
 
         mostrarAlerta("Sucesso", "Livro alterado.");
@@ -130,7 +127,6 @@ public class FXMLLivroController implements Initializable {
         }
         livros.remove(selecionado);
 
-        // SALVA OS DADOS
         GerenciadorDeDados.salvarLivros(new ArrayList<>(livros));
 
         mostrarAlerta("Sucesso", "Livro excluído.");
@@ -140,8 +136,6 @@ public class FXMLLivroController implements Initializable {
     private void voltar(ActionEvent e) {
         Navigator.goTo((Node) e.getSource(), "/biblioteca/FXMLDecisao_de_CRUD.fxml");
     }
-
-    // --- MÉTODOS AUXILIARES ---
 
     private void preencherCampos(Livros livro) {
         if (livro == null) return;

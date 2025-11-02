@@ -40,7 +40,6 @@ public class GerenciadorDeDados {
         }
     }
 
-    // --- MÉTODOS PARA USUÁRIOS ---
     public static void salvarUsuarios(List<Usuario> usuarios) {
         try (FileWriter writer = new FileWriter(ARQUIVO_USUARIOS)) {
             gson.toJson(usuarios, writer);
@@ -59,7 +58,6 @@ public class GerenciadorDeDados {
         }
     }
 
-    // --- MÉTODOS PARA EMPRÉSTIMOS ---
     public static void salvarEmprestimos(List<Emprestimo> emprestimos) {
         try (FileWriter writer = new FileWriter(ARQUIVO_EMPRESTIMOS)) {
             gson.toJson(emprestimos, writer);

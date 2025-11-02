@@ -56,13 +56,10 @@ public class FXMLUsuarioController implements Initializable {
     private void atualizarStatusEmprestimosDosUsuarios() {
         for (Usuario usuario : usuarios) {
 
-            // --- AQUI ESTÁ A CORREÇÃO ---
-            // Usa getCpfUsuario() e !getStatus().equals("Devolvido")
             Optional<Emprestimo> emprestimoEncontrado = emprestimos.stream()
                     .filter(emp -> emp.getCpfUsuario().equals(usuario.getId()))
                     .filter(emp -> !emp.getStatus().equals("Devolvido")) // Correção aqui
                     .findFirst();
-            // --- FIM DA CORREÇÃO ---
 
             if (emprestimoEncontrado.isPresent()) {
                 Emprestimo emprestimo = emprestimoEncontrado.get();

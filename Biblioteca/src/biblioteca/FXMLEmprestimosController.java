@@ -36,7 +36,7 @@ public class FXMLEmprestimosController implements Initializable {
     @FXML private TableColumn<Emprestimo, String> colIsbn;
     @FXML private TableColumn<Emprestimo, LocalDate> colRetirada;
     @FXML private TableColumn<Emprestimo, LocalDate> colDevolucao;
-    @FXML private TableColumn<Emprestimo, String> colDevolvido; // No FXML, o fx:id é colDevolvido
+    @FXML private TableColumn<Emprestimo, String> colDevolvido;
 
     private ObservableList<Emprestimo> listaDeEmprestimos;
     private List<Usuario> todosUsuarios;
