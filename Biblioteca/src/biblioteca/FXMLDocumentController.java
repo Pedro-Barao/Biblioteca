@@ -2,6 +2,7 @@ package biblioteca;
 
 import java.net.URL;
 import java.util.ResourceBundle;
+
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -13,12 +14,16 @@ import javafx.scene.control.TextField;
 
 public class FXMLDocumentController implements Initializable {
 
-    @FXML private Button entrarBtn;
-    @FXML private TextField loginCampo;
-    @FXML private PasswordField senhaCampo;
+    @FXML
+    private Button entrarBtn;
+    @FXML
+    private TextField loginCampo;
+    @FXML
+    private PasswordField senhaCampo;
 
     @Override
-    public void initialize(URL url, ResourceBundle rb) {}
+    public void initialize(URL url, ResourceBundle rb) {
+    }
 
     @FXML
     private void entrarAction(ActionEvent event) {

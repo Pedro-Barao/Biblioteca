@@ -1,0 +1,11 @@
+[
+  {
+    "id": "110.095.749-90",
+    "nome": "Caio",
+    "telefone": "(44) 91111-1111",
+    "endereco": "Rua das dores",
+    "retirouLivro": false,
+    "livroEmprestadoId": "",
+    "statusEmprestimo": "Nenhum"
+  }
+]

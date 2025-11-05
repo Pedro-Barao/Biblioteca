@@ -20,21 +20,51 @@ public class Emprestimo {
         this.status = status;
     }
 
-    public String getCpfUsuario() { return cpfUsuario; }
-    public void setCpfUsuario(String cpfUsuario) { this.cpfUsuario = cpfUsuario; }
+    public String getCpfUsuario() {
+        return cpfUsuario;
+    }
 
-    public String getNomeUsuario() { return nomeUsuario; }
-    public void setNomeUsuario(String nomeUsuario) { this.nomeUsuario = nomeUsuario; }
+    public void setCpfUsuario(String cpfUsuario) {
+        this.cpfUsuario = cpfUsuario;
+    }
 
-    public String getIsbnLivro() { return isbnLivro; }
-    public void setIsbnLivro(String isbnLivro) { this.isbnLivro = isbnLivro; }
+    public String getNomeUsuario() {
+        return nomeUsuario;
+    }
 
-    public LocalDate getDataRetirada() { return dataRetirada; }
-    public void setDataRetirada(LocalDate dataRetirada) { this.dataRetirada = dataRetirada; }
+    public void setNomeUsuario(String nomeUsuario) {
+        this.nomeUsuario = nomeUsuario;
+    }
 
-    public LocalDate getDataDevolucao() { return dataDevolucao; }
-    public void setDataDevolucao(LocalDate dataDevolucao) { this.dataDevolucao = dataDevolucao; }
+    public String getIsbnLivro() {
+        return isbnLivro;
+    }
 
-    public String getStatus() { return status; }
-    public void setStatus(String status) { this.status = status; }
+    public void setIsbnLivro(String isbnLivro) {
+        this.isbnLivro = isbnLivro;
+    }
+
+    public LocalDate getDataRetirada() {
+        return dataRetirada;
+    }
+
+    public void setDataRetirada(LocalDate dataRetirada) {
+        this.dataRetirada = dataRetirada;
+    }
+
+    public LocalDate getDataDevolucao() {
+        return dataDevolucao;
+    }
+
+    public void setDataDevolucao(LocalDate dataDevolucao) {
+        this.dataDevolucao = dataDevolucao;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
 }

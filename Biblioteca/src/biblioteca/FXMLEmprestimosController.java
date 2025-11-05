@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -21,22 +22,37 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import biblioteca.Validators;
+import biblioteca.Formatters;
 
 public class FXMLEmprestimosController implements Initializable {
 
-    @FXML private Button voltarBtn;
-    @FXML private TextField cpfField;
-    @FXML private TextField isbnField;
-    @FXML private DatePicker retiradaPicker;
-    @FXML private Label devolucaoLabel;
-    @FXML private Label statusLabel;
-    @FXML private TableView<Emprestimo> tabela;
-    @FXML private TableColumn<Emprestimo, String> colCpf;
-    @FXML private TableColumn<Emprestimo, String> colNome;
-    @FXML private TableColumn<Emprestimo, String> colIsbn;
-    @FXML private TableColumn<Emprestimo, LocalDate> colRetirada;
-    @FXML private TableColumn<Emprestimo, LocalDate> colDevolucao;
-    @FXML private TableColumn<Emprestimo, String> colDevolvido;
+    @FXML
+    private Button voltarBtn;
+    @FXML
+    private TextField cpfField;
+    @FXML
+    private TextField isbnField;
+    @FXML
+    private DatePicker retiradaPicker;
+    @FXML
+    private Label devolucaoLabel;
+    @FXML
+    private Label statusLabel;
+    @FXML
+    private TableView<Emprestimo> tabela;
+    @FXML
+    private TableColumn<Emprestimo, String> colCpf;
+    @FXML
+    private TableColumn<Emprestimo, String> colNome;
+    @FXML
+    private TableColumn<Emprestimo, String> colIsbn;
+    @FXML
+    private TableColumn<Emprestimo, LocalDate> colRetirada;
+    @FXML
+    private TableColumn<Emprestimo, LocalDate> colDevolucao;
+    @FXML
+    private TableColumn<Emprestimo, String> colDevolvido;
 
     private ObservableList<Emprestimo> listaDeEmprestimos;
     private List<Usuario> todosUsuarios;
@@ -65,28 +81,37 @@ public class FXMLEmprestimosController implements Initializable {
         });
 
         retiradaPicker.setValue(LocalDate.now());
+        Formatters.applyCpfMaskEditable(cpfField);
     }
-
+        
     @FXML
     private void cadastrar(ActionEvent event) {
         String cpf = cpfField.getText();
         String isbn = isbnField.getText();
         LocalDate retirada = retiradaPicker.getValue();
 
-        if (cpf.isEmpty() || isbn.isEmpty() || retirada == null) {
+        if (cpf == null || cpf.trim().isEmpty() || isbn == null || isbn.trim().isEmpty() || retirada == null) {
+            mostrarAlerta("Erro", "CPF, ISBN e Data de Retirada são obrigatórios.");
+            return;
+        }
+        if (!Validators.isValidCPF(cpf)) {
+            mostrarAlerta("Erro", "CPF inválido.");
+            return;
+        }
+        
             mostrarAlerta("Erro", "CPF, ISBN e Data de Retirada são obrigatórios.");
             return;
         }
 
-        Optional<Usuario> usuarioOpt = todosUsuarios.stream().filter(u -> u.getId().equals(cpf)).findFirst();
-        if (usuarioOpt.isEmpty()) {
+        Optional<Usuario> usuarioOpt = todosUsuarios.stream().filter(u -> Validators.onlyDigits(u.getId()).equals(Validators.onlyDigits(cpf))).findFirst();
+        if (usuarioOpt.isPresent()) {
             mostrarAlerta("Erro", "Nenhum usuário encontrado com este CPF/ID.");
             return;
         }
         Usuario usuario = usuarioOpt.get();
 
         Optional<Livros> livroOpt = todosLivros.stream().filter(l -> l.getISBN().equals(isbn)).findFirst();
-        if (livroOpt.isEmpty()) {
+        if (livroOpt.isPresent()) {
             mostrarAlerta("Erro", "Nenhum livro encontrado com este ISBN.");
             return;
         }
@@ -98,7 +123,7 @@ public class FXMLEmprestimosController implements Initializable {
         }
 
         boolean jaTemEmprestimo = listaDeEmprestimos.stream()
-                .anyMatch(emp -> emp.getCpfUsuario().equals(cpf) && (emp.getStatus().equals("Ativo") || emp.getStatus().equals("Atrasado")));
+                .anyMatch(emp -> Validators.onlyDigits(emp.getCpfUsuario()).equals(Validators.onlyDigits(cpf)) && (emp.getStatus().equals("Ativo") || emp.getStatus().equals("Atrasado")));
         if (jaTemEmprestimo) {
             mostrarAlerta("Erro", "Este usuário já possui um empréstimo ativo.");
             return;
@@ -178,6 +203,7 @@ public class FXMLEmprestimosController implements Initializable {
         cpfField.clear();
         isbnField.clear();
         retiradaPicker.setValue(LocalDate.now());
+        Formatters.applyCpfMaskEditable(cpfField);
         devolucaoLabel.setText("[Calculado automaticamente]");
         statusLabel.setText("Nenhum empréstimo selecionado");
     }

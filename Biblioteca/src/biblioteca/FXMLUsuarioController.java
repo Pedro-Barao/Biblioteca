@@ -7,11 +7,14 @@ import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 import java.time.LocalDate; // Import necessário
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import biblioteca.Validators;
+import biblioteca.Formatters;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -22,16 +25,24 @@ import javafx.scene.control.cell.PropertyValueFactory;
 
 public class FXMLUsuarioController implements Initializable {
 
-    @FXML private Button excluirBtn, pesquisarBtn, cadastrarBtn, alterarBtn, voltarBtn;
-    @FXML private TextField nomeCampo, idCampo, telefoneCampo, enderecoCampo;
-    @FXML private TableView<Usuario> Tabela;
-    @FXML private TableColumn<Usuario, String> colunaNome, colunaId, colunaTelefone, colunaEndereco, colunaStatusEmprestimo, colunaIdLivro;
-
     private final ObservableList<Usuario> usuarios = FXCollections.observableArrayList(GerenciadorDeDados.carregarUsuarios());
     private final List<Emprestimo> emprestimos = GerenciadorDeDados.carregarEmprestimos();
+    @FXML
+    private Button excluirBtn, pesquisarBtn, cadastrarBtn, alterarBtn, voltarBtn;
+    @FXML
+    private TextField nomeCampo, idCampo, telefoneCampo, enderecoCampo;
+    @FXML
+    private TableView<Usuario> Tabela;
+    @FXML
+    private TableColumn<Usuario, String> colunaNome, colunaId, colunaTelefone, colunaEndereco, colunaStatusEmprestimo, colunaIdLivro;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        // Máscaras e filtros
+        Formatters.applyNameLettersOnly(nomeCampo);
+        Formatters.applyCpfMaskEditable(idCampo);
+        Formatters.applyPhoneMaskEditable(telefoneCampo, true);
+
         colunaNome.setCellValueFactory(new PropertyValueFactory<>("nome"));
         colunaId.setCellValueFactory(new PropertyValueFactory<>("id"));
         colunaTelefone.setCellValueFactory(new PropertyValueFactory<>("telefone"));
@@ -46,7 +57,8 @@ public class FXMLUsuarioController implements Initializable {
             boolean selecionado = n != null;
             alterarBtn.setDisable(!selecionado);
             excluirBtn.setDisable(!selecionado);
-            if (selecionado) preencherCampos(n); else limparCampos();
+            if (selecionado) preencherCampos(n);
+            else limparCampos();
         });
 
         alterarBtn.setDisable(true);
@@ -57,7 +69,7 @@ public class FXMLUsuarioController implements Initializable {
         for (Usuario usuario : usuarios) {
 
             Optional<Emprestimo> emprestimoEncontrado = emprestimos.stream()
-                    .filter(emp -> emp.getCpfUsuario().equals(usuario.getId()))
+                    .filter(emp -> Validators.onlyDigits(emp.getCpfUsuario()).equals(Validators.onlyDigits(usuario.getId())))
                     .filter(emp -> !emp.getStatus().equals("Devolvido")) // Correção aqui
                     .findFirst();
 
@@ -85,9 +97,15 @@ public class FXMLUsuarioController implements Initializable {
 
     @FXML
     private void cadastrar(ActionEvent e) {
+        // Regras de validação de Usuário
+        if (!Validators.isValidName(nomeCampo.getText())) { mostrarAlerta("Erro", "Nome inválido. Use apenas letras e espaços (mín. 2). "); return; }
+        if (!Validators.isValidPhoneBR(telefoneCampo.getText())) { mostrarAlerta("Erro", "Telefone inválido. Formato: (DD) 9XXXX-XXXX ou (DD) XXXX-XXXX."); return; }
+        if (!Validators.isValidCPF(idCampo.getText())) { mostrarAlerta("Erro", "CPF inválido."); return; }
+
         if (!validarCamposObrigatorios()) return;
         String id = idCampo.getText().trim();
-        if (usuarios.stream().anyMatch(usuario -> usuario.getId().equalsIgnoreCase(id))) {
+        String cpfDigits = Validators.onlyDigits(id);
+        if (usuarios.stream().anyMatch(u -> Validators.onlyDigits(u.getId()).equals(cpfDigits))) {
             mostrarAlerta("Erro", "Já existe um usuário cadastrado com este ID.");
             return;
         }
@@ -105,7 +123,7 @@ public class FXMLUsuarioController implements Initializable {
     @FXML
     private void pesquisar(ActionEvent e) {
         String nome = safeLower(nomeCampo);
-        String id = safeLower(idCampo);
+        String id = Validators.onlyDigits(idCampo.getText());
 
         if (nome.isEmpty() && id.isEmpty()) {
             Tabela.setItems(usuarios);
@@ -115,7 +133,7 @@ public class FXMLUsuarioController implements Initializable {
 
         List<Usuario> resultados = usuarios.stream()
                 .filter(u -> nome.isEmpty() || u.getNome().toLowerCase().contains(nome))
-                .filter(u -> id.isEmpty() || u.getId().toLowerCase().contains(id))
+                .filter(u -> id.isEmpty() || Validators.onlyDigits(u.getId()).contains(id))
                 .collect(Collectors.toList());
 
         Tabela.setItems(FXCollections.observableArrayList(resultados));
@@ -153,12 +171,28 @@ public class FXMLUsuarioController implements Initializable {
     }
 
     @FXML
-    private void voltar(ActionEvent e) { Navigator.goTo((Node) e.getSource(), "/biblioteca/FXMLDecisao_de_CRUD.fxml"); }
+    private void voltar(ActionEvent e) {
+        Navigator.goTo((Node) e.getSource(), "/biblioteca/FXMLDecisao_de_CRUD.fxml");
+    }
 
     // --- MÉTODOS AUXILIARES ---
 
-    private void preencherCampos(Usuario usuario) { if (usuario == null) return; nomeCampo.setText(usuario.getNome()); idCampo.setText(usuario.getId()); telefoneCampo.setText(usuario.getTelefone()); enderecoCampo.setText(usuario.getEndereco()); }
-    private void limparCampos() { nomeCampo.clear(); idCampo.clear(); telefoneCampo.clear(); enderecoCampo.clear(); Tabela.getSelectionModel().clearSelection(); }
+    private void preencherCampos(Usuario usuario) {
+        if (usuario == null) return;
+        nomeCampo.setText(usuario.getNome());
+        idCampo.setText(usuario.getId());
+        telefoneCampo.setText(usuario.getTelefone());
+        enderecoCampo.setText(usuario.getEndereco());
+    }
+
+    private void limparCampos() {
+        nomeCampo.clear();
+        idCampo.clear();
+        telefoneCampo.clear();
+        enderecoCampo.clear();
+        Tabela.getSelectionModel().clearSelection();
+    }
+
     private boolean validarCamposObrigatorios() {
         if (vazio(nomeCampo) || vazio(idCampo)) {
             mostrarAlerta("Erro", "Campos obrigatórios: Nome, ID");
@@ -166,8 +200,14 @@ public class FXMLUsuarioController implements Initializable {
         }
         return true;
     }
-    private boolean vazio(TextField tf) { return tf == null || tf.getText() == null || tf.getText().trim().isEmpty(); }
-    private String safeLower(TextField tf) { return (tf == null || tf.getText() == null) ? "" : tf.getText().trim().toLowerCase(); }
+
+    private boolean vazio(TextField tf) {
+        return tf == null || tf.getText() == null || tf.getText().trim().isEmpty();
+    }
+
+    private String safeLower(TextField tf) {
+        return (tf == null || tf.getText() == null) ? "" : tf.getText().trim().toLowerCase();
+    }
 
     private void mostrarAlerta(String titulo, String mensagem) {
         Alert alert;

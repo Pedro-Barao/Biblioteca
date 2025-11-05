@@ -3,6 +3,7 @@ package biblioteca;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -32,7 +33,8 @@ public class GerenciadorDeDados {
 
     public static List<Livros> carregarLivros() {
         try (FileReader reader = new FileReader(ARQUIVO_LIVROS)) {
-            Type tipoLista = new TypeToken<ArrayList<Livros>>() {}.getType();
+            Type tipoLista = new TypeToken<ArrayList<Livros>>() {
+            }.getType();
             List<Livros> livros = gson.fromJson(reader, tipoLista);
             return livros != null ? livros : new ArrayList<>();
         } catch (IOException e) {
@@ -50,7 +52,8 @@ public class GerenciadorDeDados {
 
     public static List<Usuario> carregarUsuarios() {
         try (FileReader reader = new FileReader(ARQUIVO_USUARIOS)) {
-            Type tipoLista = new TypeToken<ArrayList<Usuario>>() {}.getType();
+            Type tipoLista = new TypeToken<ArrayList<Usuario>>() {
+            }.getType();
             List<Usuario> usuarios = gson.fromJson(reader, tipoLista);
             return usuarios != null ? usuarios : new ArrayList<>();
         } catch (IOException e) {
@@ -68,7 +71,8 @@ public class GerenciadorDeDados {
 
     public static List<Emprestimo> carregarEmprestimos() {
         try (FileReader reader = new FileReader(ARQUIVO_EMPRESTIMOS)) {
-            Type tipoLista = new TypeToken<ArrayList<Emprestimo>>() {}.getType();
+            Type tipoLista = new TypeToken<ArrayList<Emprestimo>>() {
+            }.getType();
             List<Emprestimo> emprestimos = gson.fromJson(reader, tipoLista);
             return emprestimos != null ? emprestimos : new ArrayList<>();
         } catch (IOException e) {

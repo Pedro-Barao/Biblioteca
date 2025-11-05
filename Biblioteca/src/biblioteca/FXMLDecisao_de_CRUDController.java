@@ -2,6 +2,7 @@ package biblioteca;
 
 import java.net.URL;
 import java.util.ResourceBundle;
+
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -10,17 +11,29 @@ import javafx.scene.control.Button;
 
 public class FXMLDecisao_de_CRUDController implements Initializable {
 
-    @FXML private Button livrosBtn;
-    @FXML private Button sairBtn;
-    @FXML private Button usuariosBtn;
-    @FXML private Button emprestimosBtn;
+    @FXML
+    private Button livrosBtn;
+    @FXML
+    private Button sairBtn;
+    @FXML
+    private Button usuariosBtn;
+    @FXML
+    private Button emprestimosBtn;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        if (sairBtn != null) { sairBtn.setOnAction(this::sair); }
-        if (livrosBtn != null) { livrosBtn.setOnAction(this::abrirLivros); }
-        if (usuariosBtn != null) { usuariosBtn.setOnAction(this::abrirUsuarios); }
-        if (emprestimosBtn != null) { emprestimosBtn.setOnAction(this::abrirEmprestimos); }
+        if (sairBtn != null) {
+            sairBtn.setOnAction(this::sair);
+        }
+        if (livrosBtn != null) {
+            livrosBtn.setOnAction(this::abrirLivros);
+        }
+        if (usuariosBtn != null) {
+            usuariosBtn.setOnAction(this::abrirUsuarios);
+        }
+        if (emprestimosBtn != null) {
+            emprestimosBtn.setOnAction(this::abrirEmprestimos);
+        }
     }
 
     @FXML

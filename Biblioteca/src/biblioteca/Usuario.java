@@ -20,29 +20,63 @@ public class Usuario {
         this.endereco = endereco;
     }
 
-    public String getId() { return id; }
-    public void setId(String id) { this.id = id; }
+    public String getId() {
+        return id;
+    }
 
-    public String getNome() { return nome; }
-    public void setNome(String nome) { this.nome = nome; }
+    public void setId(String id) {
+        this.id = id;
+    }
 
-    public String getTelefone() { return telefone; }
-    public void setTelefone(String telefone) { this.telefone = telefone; }
+    public String getNome() {
+        return nome;
+    }
 
-    public String getEndereco() { return endereco; }
-    public void setEndereco(String endereco) { this.endereco = endereco; }
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
+    public String getTelefone() {
+        return telefone;
+    }
+
+    public void setTelefone(String telefone) {
+        this.telefone = telefone;
+    }
+
+    public String getEndereco() {
+        return endereco;
+    }
+
+    public void setEndereco(String endereco) {
+        this.endereco = endereco;
+    }
 
 
-    public boolean isRetirouLivro() { return retirouLivro; }
-    public boolean getRetirouLivro() { return retirouLivro; } 
-    public void setRetirouLivro(boolean retirouLivro) { this.retirouLivro = retirouLivro; }
+    public boolean isRetirouLivro() {
+        return retirouLivro;
+    }
 
-    public String getLivroEmprestadoId() { return livroEmprestadoId; }
+    public boolean getRetirouLivro() {
+        return retirouLivro;
+    }
+
+    public void setRetirouLivro(boolean retirouLivro) {
+        this.retirouLivro = retirouLivro;
+    }
+
+    public String getLivroEmprestadoId() {
+        return livroEmprestadoId;
+    }
+
     public void setLivroEmprestadoId(String livroEmprestadoId) {
         this.livroEmprestadoId = livroEmprestadoId == null ? "" : livroEmprestadoId;
     }
 
-    public String getStatusEmprestimo() { return statusEmprestimo; }
+    public String getStatusEmprestimo() {
+        return statusEmprestimo;
+    }
+
     public void setStatusEmprestimo(String statusEmprestimo) {
         this.statusEmprestimo = (statusEmprestimo == null || statusEmprestimo.trim().isEmpty())
                 ? "Nenhum" : statusEmprestimo;
@@ -50,12 +84,14 @@ public class Usuario {
 
     public String resumo() {
         return String.format(
-            "ID: %s | Nome: %s | Tel: %s | Status: %s%s",
-            safe(id), safe(nome), safe(telefone),
-            safe(statusEmprestimo),
-            livroEmprestadoId == null || livroEmprestadoId.trim().isEmpty() ? "" : " (ISBN: " + livroEmprestadoId + ")"
+                "ID: %s | Nome: %s | Tel: %s | Status: %s%s",
+                safe(id), safe(nome), safe(telefone),
+                safe(statusEmprestimo),
+                livroEmprestadoId == null || livroEmprestadoId.trim().isEmpty() ? "" : " (ISBN: " + livroEmprestadoId + ")"
         );
     }
 
-    private String safe(String s) { return s == null ? "" : s; }
+    private String safe(String s) {
+        return s == null ? "" : s;
+    }
 }

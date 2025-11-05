@@ -6,30 +6,39 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: #AFEEEE;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="biblioteca.FXMLDecisao_de_CRUDController">
+<AnchorPane xmlns:fx="http://javafx.com/fxml/1" id="AnchorPane" prefHeight="400.0" prefWidth="600.0"
+            style="-fx-background-color: #AFEEEE;" xmlns="http://javafx.com/javafx/21"
+            fx:controller="biblioteca.FXMLDecisao_de_CRUDController">
     <children>
-        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#e0f9ff" height="100.0" layoutX="102.0" layoutY="76.0" stroke="BLACK" strokeType="INSIDE" style="-fx-arc-width: 50; -fx-arc-height: 50; -fx-stroke-width: 2.5;" width="397.0" />
-        <Button fx:id="sairBtn" layoutX="14.0" layoutY="14.0" mnemonicParsing="false" prefHeight="32.0" prefWidth="86.0" style="-fx-background-color: #ce2529; -fx-border-radius: 5;" text="Sair" textFill="WHITE" />
+        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#e0f9ff" height="100.0" layoutX="102.0" layoutY="76.0"
+                   stroke="BLACK" strokeType="INSIDE"
+                   style="-fx-arc-width: 50; -fx-arc-height: 50; -fx-stroke-width: 2.5;" width="397.0"/>
+        <Button fx:id="sairBtn" layoutX="14.0" layoutY="14.0" mnemonicParsing="false" prefHeight="32.0" prefWidth="86.0"
+                style="-fx-background-color: #ce2529; -fx-border-radius: 5;" text="Sair" textFill="WHITE"/>
 
-        <Button fx:id="emprestimosBtn" onAction="#abrirEmprestimos" layoutX="40.0" layoutY="233.0" prefHeight="79.0" prefWidth="170.0" style="-fx-background-color: #98bf64; -fx-background-radius: 5;" text="Empréstimos">
+        <Button fx:id="emprestimosBtn" onAction="#abrirEmprestimos" layoutX="40.0" layoutY="233.0" prefHeight="79.0"
+                prefWidth="170.0" style="-fx-background-color: #98bf64; -fx-background-radius: 5;" text="Empréstimos">
             <font>
-                <Font size="18.0" />
+                <Font size="18.0"/>
             </font>
         </Button>
-        <Button fx:id="usuariosBtn" onAction="#abrirUsuarios" layoutX="215.0" layoutY="233.0" prefHeight="79.0" prefWidth="170.0" style="-fx-background-color: #ffc300; -fx-background-radius: 5;" text="Usuários">
+        <Button fx:id="usuariosBtn" onAction="#abrirUsuarios" layoutX="215.0" layoutY="233.0" prefHeight="79.0"
+                prefWidth="170.0" style="-fx-background-color: #ffc300; -fx-background-radius: 5;" text="Usuários">
             <font>
-                <Font size="18.0" />
+                <Font size="18.0"/>
             </font>
         </Button>
-        <Button fx:id="livrosBtn" onAction="#abrirLivros" layoutX="390.0" layoutY="233.0" prefHeight="79.0" prefWidth="170.0" style="-fx-background-color: #6495ED; -fx-background-radius: 5;" text="Livros">
+        <Button fx:id="livrosBtn" onAction="#abrirLivros" layoutX="390.0" layoutY="233.0" prefHeight="79.0"
+                prefWidth="170.0" style="-fx-background-color: #6495ED; -fx-background-radius: 5;" text="Livros">
             <font>
-                <Font size="18.0" />
+                <Font size="18.0"/>
             </font>
         </Button>
 
-        <Text layoutX="117.0" layoutY="117.0" strokeLineCap="ROUND" strokeType="OUTSIDE" strokeWidth="0.0" text="Olá, admin! O que você deseja fazer hoje?" textAlignment="CENTER" wrappingWidth="365.49658203125">
+        <Text layoutX="117.0" layoutY="117.0" strokeLineCap="ROUND" strokeType="OUTSIDE" strokeWidth="0.0"
+              text="Olá, admin! O que você deseja fazer hoje?" textAlignment="CENTER" wrappingWidth="365.49658203125">
             <font>
-                <Font size="25.0" />
+                <Font size="25.0"/>
             </font>
         </Text>
     </children>

@@ -12,72 +12,85 @@
 <?import javafx.scene.text.Text?>
 <?import java.net.URL?>
 
-<AnchorPane id="AnchorPane" prefHeight="500.0" prefWidth="700.0" style="-fx-background-color: #AFEEEE;" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="biblioteca.FXMLUsuarioController">
+<AnchorPane xmlns:fx="http://javafx.com/fxml/1" id="AnchorPane" prefHeight="500.0" prefWidth="700.0"
+            style="-fx-background-color: #AFEEEE;" xmlns="http://javafx.com/javafx/24.0.1"
+            fx:controller="biblioteca.FXMLUsuarioController">
     <stylesheets>
-        <URL value="@fxmlcrud.css" />
+        <URL value="@fxmlcrud.css"/>
     </stylesheets>
     <children>
 
         <Text layoutX="30.0" layoutY="50.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Gerenciamento de Usuários">
             <font>
-                <Font size="24.0" />
+                <Font size="24.0"/>
             </font>
         </Text>
 
-        <Button fx:id="voltarBtn" layoutX="14.0" layoutY="14.0" mnemonicParsing="false" onAction="#voltar" style="-fx-background-color: #000000; -fx-background-radius: 10;" text="&lt;" textFill="WHITE">
+        <Button fx:id="voltarBtn" layoutX="14.0" layoutY="14.0" mnemonicParsing="false" onAction="#voltar"
+                style="-fx-background-color: #000000; -fx-background-radius: 10;" text="&lt;" textFill="WHITE">
             <font>
-                <Font name="System Bold" size="13.0" />
+                <Font name="System Bold" size="13.0"/>
             </font>
         </Button>
 
         <GridPane layoutX="30.0" layoutY="70.0" prefHeight="130.0" prefWidth="640.0">
             <columnConstraints>
-                <ColumnConstraints hgrow="SOMETIMES" maxWidth="100.0" minWidth="10.0" prefWidth="80.0" />
-                <ColumnConstraints hgrow="SOMETIMES" maxWidth="560.0" minWidth="10.0" prefWidth="560.0" />
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="100.0" minWidth="10.0" prefWidth="80.0"/>
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="560.0" minWidth="10.0" prefWidth="560.0"/>
             </columnConstraints>
             <rowConstraints>
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
             </rowConstraints>
             <children>
-                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Nome:" />
-                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="CPF:" GridPane.rowIndex="1" />
-                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Telefone:" GridPane.rowIndex="2" />
-                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Endereço:" GridPane.rowIndex="3" />
+                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Nome:"/>
+                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="CPF:" GridPane.rowIndex="1"/>
+                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Telefone:" GridPane.rowIndex="2"/>
+                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Endereço:" GridPane.rowIndex="3"/>
 
-                <TextField fx:id="nomeCampo" promptText="Nome Completo" GridPane.columnIndex="1" />
-                <TextField fx:id="cpfCampo" promptText="Número do CPF (chave primária)" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                <TextField fx:id="telefoneCampo" promptText="Telefone/Contato" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                <TextField fx:id="enderecoCampo" promptText="Endereço Completo" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                <TextField fx:id="nomeCampo" promptText="Nome Completo" GridPane.columnIndex="1"/>
+                <TextField fx:id="cpfCampo" promptText="Número do CPF (chave primária)" GridPane.columnIndex="1"
+                           GridPane.rowIndex="1"/>
+                <TextField fx:id="telefoneCampo" promptText="Telefone/Contato" GridPane.columnIndex="1"
+                           GridPane.rowIndex="2"/>
+                <TextField fx:id="enderecoCampo" promptText="Endereço Completo" GridPane.columnIndex="1"
+                           GridPane.rowIndex="3"/>
             </children>
         </GridPane>
 
         <TableView fx:id="tabelaUsuarios" layoutX="30.0" layoutY="210.0" prefHeight="200.0" prefWidth="640.0">
             <columns>
-                <TableColumn fx:id="colunaNome" prefWidth="150.0" text="Nome" />
-                <TableColumn fx:id="colunaCPF" prefWidth="130.0" text="CPF" />
-                <TableColumn fx:id="colunaTelefone" prefWidth="130.0" text="Telefone" />
-                <TableColumn fx:id="colunaEndereco" prefWidth="230.0" text="Endereço" />
+                <TableColumn fx:id="colunaNome" prefWidth="150.0" text="Nome"/>
+                <TableColumn fx:id="colunaCPF" prefWidth="130.0" text="CPF"/>
+                <TableColumn fx:id="colunaTelefone" prefWidth="130.0" text="Telefone"/>
+                <TableColumn fx:id="colunaEndereco" prefWidth="230.0" text="Endereço"/>
             </columns>
         </TableView>
 
         <GridPane layoutX="30.0" layoutY="420.0" prefHeight="41.0" prefWidth="640.0">
             <columnConstraints>
-                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="25.0" />
-                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="25.0" />
-                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="25.0" />
-                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="25.0" />
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="25.0"/>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="25.0"/>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="25.0"/>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="25.0"/>
             </columnConstraints>
             <rowConstraints>
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
             </rowConstraints>
             <children>
-                <Button onAction="#cadastrar" prefHeight="40.0" prefWidth="150.0" style="-fx-background-radius: 5; -fx-background-color: #98bf64;" text="Cadastrar" />
-                <Button onAction="#pesquisar" prefHeight="40.0" prefWidth="150.0" style="-fx-background-radius: 5; -fx-background-color: #ffffff;" text="Pesquisar" GridPane.columnIndex="1" />
-                <Button onAction="#alterar" prefHeight="40.0" prefWidth="150.0" style="-fx-background-radius: 5; -fx-background-color: #ffc300;" text="Alterar" GridPane.columnIndex="2" />
-                <Button onAction="#excluir" prefHeight="40.0" prefWidth="150.0" style="-fx-background-color: #ce2529; -fx-background-radius: 5;" text="Excluir" textFill="WHITE" GridPane.columnIndex="3" />
+                <Button onAction="#cadastrar" prefHeight="40.0" prefWidth="150.0"
+                        style="-fx-background-radius: 5; -fx-background-color: #98bf64;" text="Cadastrar"/>
+                <Button onAction="#pesquisar" prefHeight="40.0" prefWidth="150.0"
+                        style="-fx-background-radius: 5; -fx-background-color: #ffffff;" text="Pesquisar"
+                        GridPane.columnIndex="1"/>
+                <Button onAction="#alterar" prefHeight="40.0" prefWidth="150.0"
+                        style="-fx-background-radius: 5; -fx-background-color: #ffc300;" text="Alterar"
+                        GridPane.columnIndex="2"/>
+                <Button onAction="#excluir" prefHeight="40.0" prefWidth="150.0"
+                        style="-fx-background-color: #ce2529; -fx-background-radius: 5;" text="Excluir" textFill="WHITE"
+                        GridPane.columnIndex="3"/>
             </children>
         </GridPane>
     </children>

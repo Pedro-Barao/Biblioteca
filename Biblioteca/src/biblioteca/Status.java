@@ -13,9 +13,6 @@ public enum Status {
         this.descricao = descricao;
     }
 
-    public String getCodigo() { return codigo; }
-    public String getDescricao() { return descricao; }
-
     public static Status fromCodigo(String codigo) {
         if (codigo == null) return null;
         for (Status s : values()) {
@@ -24,6 +21,14 @@ public enum Status {
             }
         }
         return null;
+    }
+
+    public String getCodigo() {
+        return codigo;
+    }
+
+    public String getDescricao() {
+        return descricao;
     }
 
     @Override

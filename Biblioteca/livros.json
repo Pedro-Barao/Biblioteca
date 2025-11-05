@@ -1,0 +1,11 @@
+[
+  {
+    "isbn": "12345",
+    "nome": "Senhor dos Aneis",
+    "ano": "2006",
+    "autor": "Roberto",
+    "genero": "Fantasia",
+    "retirada_Entrega": "ESTOQUE",
+    "emEstoque": false
+  }
+]

@@ -5,11 +5,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import biblioteca.Validators;
+import biblioteca.Formatters;
 import javafx.scene.Node;
 import javafx.scene.control.Alert; // Importe o Alert
 import javafx.scene.control.Button;
@@ -20,16 +23,23 @@ import javafx.scene.control.cell.PropertyValueFactory;
 
 public class FXMLLivroController implements Initializable {
 
-    @FXML private Button excluirBtn, pesquisarBtn, cadastrarBtn, alterarBtn, voltarBtn;
-    @FXML private TextField nomeCampo, isbnCampo, anoCampo, autorCampo, retirada_entregaCampo, generoCampo;
-    @FXML private TableView<Livros> Tabela;
-    @FXML private TableColumn<Livros, String> colunaNome, colunaISBN, colunaAno, colunaAutor, colunaGenero;
-    @FXML private TableColumn<Livros, Status> colunaRetEnt;
-
     private final ObservableList<Livros> livros = FXCollections.observableArrayList(GerenciadorDeDados.carregarLivros());
+    @FXML
+    private Button excluirBtn, pesquisarBtn, cadastrarBtn, alterarBtn, voltarBtn;
+    @FXML
+    private TextField nomeCampo, isbnCampo, anoCampo, autorCampo, retirada_entregaCampo, generoCampo;
+    @FXML
+    private TableView<Livros> Tabela;
+    @FXML
+    private TableColumn<Livros, String> colunaNome, colunaISBN, colunaAno, colunaAutor, colunaGenero;
+    @FXML
+    private TableColumn<Livros, Status> colunaRetEnt;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        // Filtro básico para ISBN
+        Formatters.applyIsbnFilter(isbnCampo);
+
         colunaNome.setCellValueFactory(new PropertyValueFactory<>("nome"));
         colunaISBN.setCellValueFactory(new PropertyValueFactory<>("ISBN"));
         colunaAno.setCellValueFactory(new PropertyValueFactory<>("ano"));
@@ -42,7 +52,8 @@ public class FXMLLivroController implements Initializable {
             boolean selecionado = n != null;
             alterarBtn.setDisable(!selecionado);
             excluirBtn.setDisable(!selecionado);
-            if (selecionado) preencherCampos(n); else limparCampos();
+            if (selecionado) preencherCampos(n);
+            else limparCampos();
         });
 
         alterarBtn.setDisable(true);
@@ -51,6 +62,9 @@ public class FXMLLivroController implements Initializable {
 
     @FXML
     private void cadastrar(ActionEvent e) {
+        // Validação de ISBN
+        if (!Validators.isValidISBN(isbnCampo.getText())) { mostrarAlerta("Erro", "ISBN inválido (aceita ISBN-10 ou ISBN-13)."); return; }
+
         if (!validarCamposObrigatorios()) return;
         Status status = obterStatusDaUI();
         if (status == null) {
