@@ -1,0 +1,11 @@
+[
+  {
+    "isbn": "978-3-16-148410-0",
+    "nome": "Pedra",
+    "ano": "2099",
+    "autor": "Malphite",
+    "genero": "Aventura",
+    "retirada_Entrega": "ESTOQUE",
+    "emEstoque": true
+  }
+]

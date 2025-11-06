@@ -16,64 +16,30 @@ public class Livros {
         this.autor = autor;
         this.genero = genero;
         this.retirada_Entrega = retirada_Entrega;
-        this.emEstoque = emEstoque;
+        // CORREÇÃO: Inicializa emEstoque baseado no Status
+        this.emEstoque = retirada_Entrega == Status.ESTOQUE;
     }
 
-    public String getISBN() {
-        return isbn;
-    }
+    public String getISBN() { return isbn; }
+    public void setISBN(String isbn) { this.isbn = isbn; }
 
-    public void setISBN(String isbn) {
-        this.isbn = isbn;
-    }
+    public String getNome() { return nome; }
+    public void setNome(String nome) { this.nome = nome; }
 
-    public String getNome() {
-        return nome;
-    }
+    public String getAno() { return ano; }
+    public void setAno(String ano) { this.ano = ano; }
 
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
+    public String getAutor() { return autor; }
+    public void setAutor(String autor) { this.autor = autor; }
 
-    public String getAno() {
-        return ano;
-    }
+    public String getGenero() { return genero; }
+    public void setGenero(String genero) { this.genero = genero; }
 
-    public void setAno(String ano) {
-        this.ano = ano;
-    }
+    public Status getRetirada_Entrega() { return retirada_Entrega; }
+    public void setRetirada_Entrega(Status retirada_Entrega) { this.retirada_Entrega = retirada_Entrega; }
 
-    public String getAutor() {
-        return autor;
-    }
-
-    public void setAutor(String autor) {
-        this.autor = autor;
-    }
-
-    public String getGenero() {
-        return genero;
-    }
-
-    public void setGenero(String genero) {
-        this.genero = genero;
-    }
-
-    public Status getRetirada_Entrega() {
-        return retirada_Entrega;
-    }
-
-    public void setRetirada_Entrega(Status retirada_Entrega) {
-        this.retirada_Entrega = retirada_Entrega;
-    }
-
-    public boolean getEmEstoque() {
-        return emEstoque;
-    }
-
-    public void setEmEstoque(boolean emEstoque) {
-        this.emEstoque = emEstoque;
-    }
+    public boolean getEmEstoque() { return emEstoque; }
+    public void setEmEstoque(boolean emEstoque) { this.emEstoque = emEstoque; }
 
     public String resumo() {
         return String.format("ISBN: %s, Nome: %s, Autor: %s, Status: %s", isbn, nome, autor, retirada_Entrega.getDescricao());

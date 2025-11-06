@@ -1,0 +1,11 @@
+[
+  {
+    "id": "088.987.219-86",
+    "nome": "teste",
+    "telefone": "(44) 99901-0320",
+    "endereco": "eeaea",
+    "retirouLivro": false,
+    "livroEmprestadoId": "",
+    "statusEmprestimo": "Nenhum"
+  }
+]

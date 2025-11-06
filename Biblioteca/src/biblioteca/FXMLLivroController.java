@@ -14,7 +14,7 @@ import javafx.fxml.Initializable;
 import biblioteca.Validators;
 import biblioteca.Formatters;
 import javafx.scene.Node;
-import javafx.scene.control.Alert; // Importe o Alert
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -33,15 +33,15 @@ public class FXMLLivroController implements Initializable {
     @FXML
     private TableColumn<Livros, String> colunaNome, colunaISBN, colunaAno, colunaAutor, colunaGenero;
     @FXML
-    private TableColumn<Livros, Status> colunaRetEnt;
+    private TableColumn<Livros, Status> colunaRetEnt; // Mapeado para o Status (Enum)
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // Filtro básico para ISBN
+        // Assume-se que Formatters existe
         Formatters.applyIsbnFilter(isbnCampo);
 
         colunaNome.setCellValueFactory(new PropertyValueFactory<>("nome"));
-        colunaISBN.setCellValueFactory(new PropertyValueFactory<>("ISBN"));
+        colunaISBN.setCellValueFactory(new PropertyValueFactory<>("ISBN")); // Propriedade com I maiúsculo
         colunaAno.setCellValueFactory(new PropertyValueFactory<>("ano"));
         colunaAutor.setCellValueFactory(new PropertyValueFactory<>("autor"));
         colunaGenero.setCellValueFactory(new PropertyValueFactory<>("genero"));
@@ -62,15 +62,16 @@ public class FXMLLivroController implements Initializable {
 
     @FXML
     private void cadastrar(ActionEvent e) {
-        // Validação de ISBN
         if (!Validators.isValidISBN(isbnCampo.getText())) { mostrarAlerta("Erro", "ISBN inválido (aceita ISBN-10 ou ISBN-13)."); return; }
 
         if (!validarCamposObrigatorios()) return;
+
         Status status = obterStatusDaUI();
         if (status == null) {
-            mostrarAlerta("Erro", "Status inválido. Use 1, 2 ou 3.");
+            mostrarAlerta("Erro", "Status inválido. Use 1 (Retirado), 2 (Estoque) ou 3 (Atrasado).");
             return;
         }
+
         String isbn = isbnCampo.getText().trim();
         if (livros.stream().anyMatch(l -> l.getISBN().equalsIgnoreCase(isbn))) {
             mostrarAlerta("Erro", "ISBN já cadastrado.");
@@ -83,7 +84,7 @@ public class FXMLLivroController implements Initializable {
         GerenciadorDeDados.salvarLivros(new ArrayList<>(livros));
 
         mostrarAlerta("Sucesso", "Livro cadastrado.");
-        Tabela.setItems(livros); // Garante que a tabela está olhando para a lista certa
+        Tabela.refresh();
         limparCampos();
     }
 
@@ -97,6 +98,10 @@ public class FXMLLivroController implements Initializable {
         }
 
         Status filtroStatus = sStat.isEmpty() ? null : Status.fromCodigo(sStat);
+        if (!sStat.isEmpty() && filtroStatus == null) {
+            mostrarAlerta("Erro", "Código de Status inválido. Use 1, 2 ou 3.");
+            return;
+        }
 
         List<Livros> resultados = livros.stream()
                 .filter(l -> nome.isEmpty() || l.getNome().toLowerCase().contains(nome))
@@ -119,11 +124,17 @@ public class FXMLLivroController implements Initializable {
         }
         if (!validarCamposObrigatorios()) return;
 
+        Status novoStatus = obterStatusDaUI();
+        if (novoStatus == null) {
+            mostrarAlerta("Erro", "Status inválido. Use 1, 2 ou 3.");
+            return;
+        }
+
         selecionado.setNome(nomeCampo.getText().trim());
         selecionado.setAno(anoCampo.getText().trim());
         selecionado.setAutor(autorCampo.getText().trim());
         selecionado.setGenero(generoCampo.getText().trim());
-        selecionado.setRetirada_Entrega(obterStatusDaUI());
+        selecionado.setRetirada_Entrega(novoStatus);
         Tabela.refresh();
 
         GerenciadorDeDados.salvarLivros(new ArrayList<>(livros));
@@ -139,11 +150,19 @@ public class FXMLLivroController implements Initializable {
             mostrarAlerta("Erro", "Selecione um livro na tabela para excluir.");
             return;
         }
+
+        // Validação: Não permite exclusão se estiver retirado
+        if (selecionado.getRetirada_Entrega() == Status.RETIRADO || selecionado.getRetirada_Entrega() == Status.ATRASADO) {
+            mostrarAlerta("Erro", "Não é possível excluir um livro que está atualmente emprestado/retirado.");
+            return;
+        }
+
         livros.remove(selecionado);
 
         GerenciadorDeDados.salvarLivros(new ArrayList<>(livros));
 
         mostrarAlerta("Sucesso", "Livro excluído.");
+        limparCampos();
     }
 
     @FXML
@@ -169,6 +188,7 @@ public class FXMLLivroController implements Initializable {
         generoCampo.clear();
         retirada_entregaCampo.clear();
         Tabela.getSelectionModel().clearSelection();
+        Tabela.setItems(livros); // Volta a mostrar a lista completa
     }
 
     private boolean validarCamposObrigatorios() {

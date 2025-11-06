@@ -48,22 +48,23 @@ public class FXMLLoginController implements Initializable {
 
 
         String login = nomeCampo.getText();
-        String verificador_senha = senhaCampo.getText();
-        String nomes = "Teste";
-        String senhas = "123";
+        String senha = senhaCampo.getText();
+        String loginCorreto = "admin";
+        String senhaCorreta = "123";
 
 
-        if (!nomes.toUpperCase().contains(login.toUpperCase()) || !senhas.contains(verificador_senha)) {
-
-            saida.setStyle("-fx-text-fill: #b00020");
-            saida.setText("Usuário não encontrado ou Senha inválida");
-
-        } else {
+        // CORREÇÃO: Usar comparação estrita para login e senha.
+        if (loginCorreto.equals(login) && senhaCorreta.equals(senha)) {
 
             saida.setStyle("-fx-text-fill: #32CD32");
             saida.setText("Usuário encontrado com Sucesso!");
 
             Navigator.goTo((Node) e.getSource(), "/biblioteca/FXMLDecisao_de_CRUD.fxml");
+
+        } else {
+
+            saida.setStyle("-fx-text-fill: #b00020");
+            saida.setText("Login ou Senha inválida");
 
         }
 

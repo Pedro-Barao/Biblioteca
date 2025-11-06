@@ -1,0 +1,11 @@
+[
+  {
+    "id": "586.701.430-46",
+    "nome": "peraomainrocha",
+    "telefone": "(44) 93121-4532",
+    "endereco": "rua laranjeira podre, 123",
+    "retirouLivro": false,
+    "livroEmprestadoId": "",
+    "statusEmprestimo": "Nenhum"
+  }
+]

@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
-import java.time.LocalDate; // Import necessário
+import java.time.LocalDate;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -25,6 +25,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 
 public class FXMLUsuarioController implements Initializable {
 
+    // Carrega dados de usuários e empréstimos
     private final ObservableList<Usuario> usuarios = FXCollections.observableArrayList(GerenciadorDeDados.carregarUsuarios());
     private final List<Emprestimo> emprestimos = GerenciadorDeDados.carregarEmprestimos();
     @FXML
@@ -68,27 +69,35 @@ public class FXMLUsuarioController implements Initializable {
     private void atualizarStatusEmprestimosDosUsuarios() {
         for (Usuario usuario : usuarios) {
 
+            // Filtra por empréstimos ativos (não devolvidos)
             Optional<Emprestimo> emprestimoEncontrado = emprestimos.stream()
                     .filter(emp -> Validators.onlyDigits(emp.getCpfUsuario()).equals(Validators.onlyDigits(usuario.getId())))
-                    .filter(emp -> !emp.getStatus().equals("Devolvido")) // Correção aqui
+                    .filter(emp -> !emp.getStatus().equals("Devolvido"))
                     .findFirst();
 
             if (emprestimoEncontrado.isPresent()) {
                 Emprestimo emprestimo = emprestimoEncontrado.get();
+                String statusAtual = emprestimo.getStatus();
 
+                // Verifica se está atrasado (e atualiza o status do empréstimo na lista)
                 if (emprestimo.getDataDevolucao().isBefore(LocalDate.now())) {
+                    statusAtual = "Atrasado";
                     emprestimo.setStatus("Atrasado");
                 }
-                usuario.setStatusEmprestimo(emprestimo.getStatus());
+
+                usuario.setStatusEmprestimo(statusAtual);
                 usuario.setLivroEmprestadoId(emprestimo.getIsbnLivro());
+                usuario.setRetirouLivro(true); // Sincroniza flag
 
             } else {
                 usuario.setStatusEmprestimo("Nenhum");
                 usuario.setLivroEmprestadoId("");
+                usuario.setRetirouLivro(false); // Sincroniza flag
             }
         }
 
-        GerenciadorDeDados.salvarEmprestimos(emprestimos);
+        // Salva a lista de empréstimos (para persistir o status 'Atrasado')
+        GerenciadorDeDados.salvarEmprestimos(new ArrayList<>(emprestimos));
 
         if (Tabela != null) {
             Tabela.refresh();
@@ -97,12 +106,12 @@ public class FXMLUsuarioController implements Initializable {
 
     @FXML
     private void cadastrar(ActionEvent e) {
-        // Regras de validação de Usuário
+        // Validações
         if (!Validators.isValidName(nomeCampo.getText())) { mostrarAlerta("Erro", "Nome inválido. Use apenas letras e espaços (mín. 2). "); return; }
         if (!Validators.isValidPhoneBR(telefoneCampo.getText())) { mostrarAlerta("Erro", "Telefone inválido. Formato: (DD) 9XXXX-XXXX ou (DD) XXXX-XXXX."); return; }
         if (!Validators.isValidCPF(idCampo.getText())) { mostrarAlerta("Erro", "CPF inválido."); return; }
-
         if (!validarCamposObrigatorios()) return;
+
         String id = idCampo.getText().trim();
         String cpfDigits = Validators.onlyDigits(id);
         if (usuarios.stream().anyMatch(u -> Validators.onlyDigits(u.getId()).equals(cpfDigits))) {
@@ -149,10 +158,17 @@ public class FXMLUsuarioController implements Initializable {
         }
         if (!validarCamposObrigatorios()) return;
 
+        // Verifica se o ID foi alterado para um CPF já existente
+        if (!selecionado.getId().equals(idCampo.getText().trim())) {
+            mostrarAlerta("Erro", "O ID (CPF) não pode ser alterado diretamente. Exclua e cadastre novamente.");
+            return;
+        }
+
         selecionado.setNome(nomeCampo.getText().trim());
         selecionado.setTelefone(telefoneCampo.getText().trim());
         selecionado.setEndereco(enderecoCampo.getText().trim());
         Tabela.refresh();
+
         GerenciadorDeDados.salvarUsuarios(new ArrayList<>(usuarios));
         mostrarAlerta("Sucesso", "Usuário alterado.");
         limparCampos();
@@ -165,13 +181,24 @@ public class FXMLUsuarioController implements Initializable {
             mostrarAlerta("Erro", "Selecione um usuário na tabela para excluir.");
             return;
         }
+
+        // Validação de Exclusão: Não permite se houver empréstimo ativo/atrasado
+        if (selecionado.isRetirouLivro()) {
+            mostrarAlerta("Erro", "Não é possível excluir o usuário. Ele possui um livro emprestado (Status: " + selecionado.getStatusEmprestimo() + ").");
+            return;
+        }
+
         usuarios.remove(selecionado);
         GerenciadorDeDados.salvarUsuarios(new ArrayList<>(usuarios));
         mostrarAlerta("Sucesso", "Usuário excluído.");
+        limparCampos();
     }
 
     @FXML
     private void voltar(ActionEvent e) {
+        // Salva os status atualizados antes de sair
+        GerenciadorDeDados.salvarEmprestimos(new ArrayList<>(emprestimos));
+        GerenciadorDeDados.salvarUsuarios(new ArrayList<>(usuarios));
         Navigator.goTo((Node) e.getSource(), "/biblioteca/FXMLDecisao_de_CRUD.fxml");
     }
 

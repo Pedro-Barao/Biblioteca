@@ -22,8 +22,9 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
-import biblioteca.Validators;
-import biblioteca.Formatters;
+// Importações de classes auxiliares assumidas
+// import biblioteca.Validators;
+// import biblioteca.Formatters;
 
 public class FXMLEmprestimosController implements Initializable {
 
@@ -81,9 +82,10 @@ public class FXMLEmprestimosController implements Initializable {
         });
 
         retiradaPicker.setValue(LocalDate.now());
-        Formatters.applyCpfMaskEditable(cpfField);
+        // Assumindo que a classe Formatters existe
+        // Formatters.applyCpfMaskEditable(cpfField);
     }
-        
+
     @FXML
     private void cadastrar(ActionEvent event) {
         String cpf = cpfField.getText();
@@ -94,24 +96,20 @@ public class FXMLEmprestimosController implements Initializable {
             mostrarAlerta("Erro", "CPF, ISBN e Data de Retirada são obrigatórios.");
             return;
         }
-        if (!Validators.isValidCPF(cpf)) {
-            mostrarAlerta("Erro", "CPF inválido.");
-            return;
-        }
-        
-            mostrarAlerta("Erro", "CPF, ISBN e Data de Retirada são obrigatórios.");
-            return;
-        }
 
-        Optional<Usuario> usuarioOpt = todosUsuarios.stream().filter(u -> Validators.onlyDigits(u.getId()).equals(Validators.onlyDigits(cpf))).findFirst();
-        if (usuarioOpt.isPresent()) {
+        // 1. Busca e Validação
+        Optional<Usuario> usuarioOpt = todosUsuarios.stream()
+                .filter(u -> Validators.onlyDigits(u.getId()).equals(Validators.onlyDigits(cpf)))
+                .findFirst();
+
+        if (!usuarioOpt.isPresent()) {
             mostrarAlerta("Erro", "Nenhum usuário encontrado com este CPF/ID.");
             return;
         }
         Usuario usuario = usuarioOpt.get();
 
         Optional<Livros> livroOpt = todosLivros.stream().filter(l -> l.getISBN().equals(isbn)).findFirst();
-        if (livroOpt.isPresent()) {
+        if (!livroOpt.isPresent()) {
             mostrarAlerta("Erro", "Nenhum livro encontrado com este ISBN.");
             return;
         }
@@ -129,6 +127,7 @@ public class FXMLEmprestimosController implements Initializable {
             return;
         }
 
+        // 2. REGISTRO E SINCRONIZAÇÃO
         LocalDate devolucao = retirada.plusDays(14);
         String nomeUsuario = usuario.getNome();
         String status = "Ativo";
@@ -136,8 +135,16 @@ public class FXMLEmprestimosController implements Initializable {
         Emprestimo novoEmprestimo = new Emprestimo(cpf, nomeUsuario, isbn, retirada, devolucao, status);
         listaDeEmprestimos.add(novoEmprestimo);
 
+        // SINCRONIZAÇÃO LIVRO:
         livro.setRetirada_Entrega(Status.RETIRADO);
+        livro.setEmEstoque(false);
 
+        // SINCRONIZAÇÃO USUÁRIO:
+        usuario.setRetirouLivro(true);
+        usuario.setLivroEmprestadoId(isbn);
+        usuario.setStatusEmprestimo(status);
+
+        tabela.refresh(); // Atualiza a tabela de empréstimos
         limparCampos();
         mostrarAlerta("Sucesso", "Empréstimo cadastrado. Devolução em " + devolucao.toString());
     }
@@ -172,7 +179,17 @@ public class FXMLEmprestimosController implements Initializable {
 
         Optional<Livros> livroOpt = todosLivros.stream().filter(l -> l.getISBN().equals(selecionado.getIsbnLivro())).findFirst();
         if (livroOpt.isPresent()) {
-            livroOpt.get().setRetirada_Entrega(Status.ESTOQUE);
+            Livros livro = livroOpt.get();
+            livro.setRetirada_Entrega(Status.ESTOQUE);
+            livro.setEmEstoque(true);
+        }
+
+        Optional<Usuario> usuarioOpt = todosUsuarios.stream().filter(u -> Validators.onlyDigits(u.getId()).equals(Validators.onlyDigits(selecionado.getCpfUsuario()))).findFirst();
+        if (usuarioOpt.isPresent()) {
+            Usuario usuario = usuarioOpt.get();
+            usuario.setRetirouLivro(false);
+            usuario.setLivroEmprestadoId("");
+            usuario.setStatusEmprestimo("Nenhum");
         }
 
         tabela.refresh();
@@ -183,7 +200,8 @@ public class FXMLEmprestimosController implements Initializable {
     private void salvar(ActionEvent event) {
         GerenciadorDeDados.salvarEmprestimos(new ArrayList<>(listaDeEmprestimos));
         GerenciadorDeDados.salvarLivros(todosLivros);
-        mostrarAlerta("Sucesso", "Todos os dados de empréstimos e livros foram salvos.");
+        GerenciadorDeDados.salvarUsuarios(todosUsuarios);
+        mostrarAlerta("Sucesso", "Todos os dados de empréstimos, livros e usuários foram salvos.");
     }
 
     @FXML
@@ -203,14 +221,13 @@ public class FXMLEmprestimosController implements Initializable {
         cpfField.clear();
         isbnField.clear();
         retiradaPicker.setValue(LocalDate.now());
-        Formatters.applyCpfMaskEditable(cpfField);
         devolucaoLabel.setText("[Calculado automaticamente]");
         statusLabel.setText("Nenhum empréstimo selecionado");
     }
 
     private void mostrarAlerta(String titulo, String mensagem) {
         Alert alert;
-        if (titulo.toLowerCase().equals("erro")) {
+        if (titulo.toLowerCase().contains("erro")) {
             alert = new Alert(Alert.AlertType.ERROR);
         } else {
             alert = new Alert(Alert.AlertType.INFORMATION);

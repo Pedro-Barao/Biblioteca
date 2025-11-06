@@ -1,0 +1,20 @@
+[
+  {
+    "isbn": "978-85-7263-343-7",
+    "nome": "da",
+    "ano": "dadadada",
+    "autor": "dadad",
+    "genero": "dada",
+    "retirada_Entrega": "RETIRADO",
+    "emEstoque": false
+  },
+  {
+    "isbn": "978-972-54000-2-9",
+    "nome": "ex",
+    "ano": "ex",
+    "autor": "ex",
+    "genero": "ex",
+    "retirada_Entrega": "ESTOQUE",
+    "emEstoque": false
+  }
+]
